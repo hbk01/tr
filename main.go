@@ -1,3 +1,4 @@
+// launch this application
 package main
 
 import ( // {{{
@@ -10,7 +11,6 @@ import ( // {{{
 	"strconv"
 	"strings"
 	"time"
-	"unicode/utf8"
 ) // }}}
 
 // TODO 202 Error, Means Sign error.
@@ -39,11 +39,13 @@ const ( // {{{
 	LANG_DE   = "de"
 ) // }}}
 
+// include form and to language
 type Language struct { // {{{
 	From string
 	To   string
 } // }}}
 
+// launch translate
 func main() { // {{{
 	lang, word := ParseArgs(os.Args)
 	fmt.Println("Translate:", word)
@@ -51,8 +53,8 @@ func main() { // {{{
 	translate(lang, word)
 } // }}}
 
+// translate
 func translate(lang Language, word string) { // {{{
-	fmt.Println(utf8.ValidString(word))
 	URL := "https://openapi.youdao.com/api"
 	Url, err := url.Parse(URL)
 	if err != nil {
@@ -71,7 +73,6 @@ func translate(lang Language, word string) { // {{{
 	params.Set("sign", Sign(url.QueryEscape(word), salt, curtime))
 	params.Set("signType", "v3")
 	Url.RawQuery = params.Encode()
-	fmt.Println(params.Encode())
 	resp, err := http.Get(Url.String())
 	if err != nil || resp.StatusCode != http.StatusOK {
 		fmt.Println("Request Services Error")
@@ -87,6 +88,7 @@ func translate(lang Language, word string) { // {{{
 	fmt.Println(string(body))
 } // }}}
 
+// sign
 func Sign(input string, salt string, curtime string) string { // {{{
 	Input := []rune(input)
 	Lenth := len(Input)
@@ -97,10 +99,10 @@ func Sign(input string, salt string, curtime string) string { // {{{
 	}
 	signString := ID + input + salt + curtime + KEY
 	s := sha256.New().Sum([]byte(signString))
-	fmt.Println(s)
 	return bytes2string(s)
 } // }}}
 
+// bytes convert to string
 func bytes2string(bytes []byte) string { // {{{
 	var builder strings.Builder
 	for _, b := range bytes {
@@ -115,6 +117,7 @@ func bytes2string(bytes []byte) string { // {{{
 	return builder.String()
 } // }}}
 
+// parse input args
 func ParseArgs(args []string) (lang Language, word string) { // {{{
 	language := Language{
 		From: LANG_AUTO,
@@ -149,6 +152,7 @@ func ParseArgs(args []string) (lang Language, word string) { // {{{
 	return language, args[len(args)-1]
 } // }}}
 
+// if lang in ["cn", "en", "ja", "ko", "fr", "ru", "de"], return true
 func IsLang(lang string) bool { // {{{
 	langs := []string{"cn", "en", "ja", "ko", "fr", "ru", "de"}
 	for _, l := range langs {
@@ -159,6 +163,7 @@ func IsLang(lang string) bool { // {{{
 	return false
 } // }}}
 
+// print usage to stdin
 func Usage() { // {{{
 	fmt.Println("tr [flag] [word]")
 	fmt.Println("")
