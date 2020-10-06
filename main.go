@@ -353,11 +353,14 @@ func ParseArgs(args []string) (lang Language, word string) { // {{{
 		From: LANG_AUTO,
 		To:   LANG_AUTO,
 	}
-	for i, arg := range args {
+
+	if len(args) == 1 {
+		Usage()
+		os.Exit(0)
+	}
+
+	for _, arg := range args {
 		// args[0] always is binary file.
-		if i == 0 {
-			continue
-		}
 
 		if arg == FLAG_HELP || arg == FLAG_HELP_LONG {
 			Usage()
@@ -413,25 +416,29 @@ func in(item string, array []string) bool { // {{{
 
 // print usage to stdin
 func Usage() { // {{{
-	fmt.Println("tr [flag] [word]")
+	fmt.Println("Translate for CLI version.")
 	fmt.Println("")
-	fmt.Println("flag:")
-	fmt.Println(" -h, --help    show this help")
-	fmt.Println(" -f=<LANG>, --form=<LANG>  set form language")
-	fmt.Println(" -t=<LANG>,   --to=<LANG>  set to language")
+	fmt.Println("USAGE:")
+	fmt.Println(TAB + "tr [FLAG] [word]")
+	fmt.Println("")
+	fmt.Println("FLAG:")
+	fmt.Println(TAB + "-h, --help    show this help")
+	fmt.Println(TAB + "-f=<LANG>, --form=<LANG>  set form language")
+	fmt.Println(TAB + "-t=<LANG>,   --to=<LANG>  set to language")
 	fmt.Println("")
 	fmt.Println("<LANG> can be:")
-	fmt.Println(" 中文Chinese  - cn")
-	fmt.Println(" 英文English  - en")
-	fmt.Println(" 日文Japanese - ja")
-	fmt.Println(" 韩文Koren    - ko")
-	fmt.Println(" 法文French   - fr")
-	fmt.Println(" 俄文Russian  - ru")
-	fmt.Println(" 德文German   - de")
+	fmt.Println(TAB + "cn - 中文Chinese")
+	fmt.Println(TAB + "en - 英文English")
+	fmt.Println(TAB + "ja - 日文Japanese")
+	fmt.Println(TAB + "ko - 韩文Koren")
+	fmt.Println(TAB + "fr - 法文French")
+	fmt.Println(TAB + "ru - 俄文Russian")
+	fmt.Println(TAB + "de - 德文German")
 	fmt.Println("")
-	fmt.Println("example:")
-	fmt.Println(" $ tr hello # form and to default to auto")
-	fmt.Println(" $ tr -t=fa world")
+	fmt.Println("EXAMPLE:")
+	fmt.Println(TAB + "$ tr hello")
+	fmt.Println(TAB + "$ tr -f=en -t=fr world")
 	fmt.Println("")
 	fmt.Println("This project in https://github.com/hbk01/tr")
+	fmt.Println("Android project in https://github.com/hbk01/Translate")
 } // }}}
