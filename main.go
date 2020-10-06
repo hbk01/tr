@@ -3,6 +3,7 @@ package main
 
 import ( // {{{
 	"crypto/sha256"
+	"encoding/hex"
 	"fmt"
 	"io/ioutil"
 	"net/http"
@@ -64,14 +65,17 @@ func translate(lang Language, word string) { // {{{
 	salt := strconv.FormatInt(time.Now().UnixNano(), 10)
 	curtime := strconv.FormatInt(time.Now().Unix(), 10)
 	params := Url.Query()
-	params.Set("q", url.QueryEscape(word))
+	params.Set("q", word)
 	params.Set("from", "auto")
 	params.Set("to", "auto")
 	params.Set("appKey", ID)
 	params.Set("salt", salt)
 	params.Set("curtime", curtime)
-	params.Set("sign", Sign(url.QueryEscape(word), salt, curtime))
+	params.Set("sign", Sign(word, salt, curtime))
 	params.Set("signType", "v3")
+	params.Set("ext", "mp3")
+	params.Set("voice", "0")
+	params.Set("strict", "false")
 	Url.RawQuery = params.Encode()
 	resp, err := http.Get(Url.String())
 	if err != nil || resp.StatusCode != http.StatusOK {
@@ -98,23 +102,8 @@ func Sign(input string, salt string, curtime string) string { // {{{
 		input = Pre + strconv.Itoa(Lenth) + Suf
 	}
 	signString := ID + input + salt + curtime + KEY
-	s := sha256.New().Sum([]byte(signString))
-	return bytes2string(s)
-} // }}}
-
-// bytes convert to string
-func bytes2string(bytes []byte) string { // {{{
-	var builder strings.Builder
-	for _, b := range bytes {
-		h := int(b) & 0xFF
-		hexString := strconv.FormatInt(int64(h), 16)
-		if len(hexString) == 1 {
-			builder.WriteString("0")
-			builder.WriteString(hexString)
-		}
-		builder.WriteString(hexString)
-	}
-	return builder.String()
+	s := sha256.Sum256([]byte(signString))
+	return hex.EncodeToString(s[:])
 } // }}}
 
 // parse input args
