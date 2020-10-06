@@ -26,10 +26,11 @@ USAGE:
 
 FLAG:
   -h, --help    show this help
+  -c, --clean   only show Translation
   -f=<LANG>, --form=<LANG>  set form language
   -t=<LANG>,   --to=<LANG>  set to language
 
-<LANG> can be:
+LANG:
   cn - 中文Chinese
   en - 英文English
   ja - 日文Japanese

@@ -23,12 +23,14 @@ const ( // {{{
 	KEY = "WiAQEJoYTzUcF9We6HnwkFAy7NByYfMt"
 
 	// flags
-	FLAG_HELP      = "-h"
-	FLAG_HELP_LONG = "--help"
-	FLAG_FROM      = "-f"
-	FLAG_FROM_LONG = "--from"
-	FLAG_TO        = "-t"
-	FLAG_TO_LONG   = "--to"
+	FLAG_HELP       = "-h"
+	FLAG_HELP_LONG  = "--help"
+	FLAG_FROM       = "-f"
+	FLAG_FROM_LONG  = "--from"
+	FLAG_TO         = "-t"
+	FLAG_TO_LONG    = "--to"
+	FLAG_CLEAN      = "-c"
+	FLAG_CLEAN_LONG = "--clean"
 
 	// language code
 	LANG_AUTO = "auto"
@@ -43,6 +45,8 @@ const ( // {{{
 	TAB = "  "
 ) // }}}
 
+var CLEAN bool = false
+
 // include form and to language
 type Language struct { // {{{
 	From string
@@ -52,7 +56,9 @@ type Language struct { // {{{
 // launch translate
 func main() { // {{{
 	lang, word := ParseArgs(os.Args)
-	fmt.Println("tr:", word, "lang:", lang.From+" -> "+lang.To)
+	if !CLEAN {
+		fmt.Println("tr:", word, "lang:", lang.From+" -> "+lang.To)
+	}
 	translate(lang, word)
 } // }}}
 
@@ -276,7 +282,12 @@ func printHumanError(code string) {
 	fmt.Println("ErrorCode:", code)
 }
 
-func printResult(resp Response) {
+func printResult(resp Response) { // {{{
+
+	if CLEAN {
+		printArray(resp.Translation)
+		os.Exit(0)
+	}
 
 	if resp.Translation != nil {
 		NewLine()
@@ -312,9 +323,9 @@ func printResult(resp Response) {
 			printArrayFull(web.Value, "", "\n"+TAB+TAB)
 		}
 	}
-}
+} // }}}
 
-func printArray(v []string) {
+func printArray(v []string) { // {{{
 	printArrayFull(v, ", ", "")
 }
 
@@ -327,7 +338,7 @@ func printArrayFull(v []string, split string, head string) {
 	}
 	str := builder.String()
 	fmt.Println(str[:len(str)-len(split)])
-}
+} // }}}
 
 func NewLine() {
 	fmt.Println("")
@@ -365,6 +376,10 @@ func ParseArgs(args []string) (lang Language, word string) { // {{{
 		if arg == FLAG_HELP || arg == FLAG_HELP_LONG {
 			Usage()
 			os.Exit(0)
+		}
+
+		if arg == FLAG_CLEAN || arg == FLAG_CLEAN_LONG {
+			CLEAN = true
 		}
 
 		if strings.HasPrefix(arg, FLAG_FROM) || strings.HasPrefix(arg, FLAG_FROM_LONG) {
@@ -423,10 +438,11 @@ func Usage() { // {{{
 	fmt.Println("")
 	fmt.Println("FLAG:")
 	fmt.Println(TAB + "-h, --help    show this help")
+	fmt.Println(TAB + "-c, --clean   only show Translation")
 	fmt.Println(TAB + "-f=<LANG>, --form=<LANG>  set form language")
 	fmt.Println(TAB + "-t=<LANG>,   --to=<LANG>  set to language")
 	fmt.Println("")
-	fmt.Println("<LANG> can be:")
+	fmt.Println("LANG:")
 	fmt.Println(TAB + "cn - 中文Chinese")
 	fmt.Println(TAB + "en - 英文English")
 	fmt.Println(TAB + "ja - 日文Japanese")
