@@ -1,6 +1,6 @@
 #!/bin/env bash
 
-echo "check environment"
+echo "- check environment"
 if [ ! -f release.note ]; then
     echo "Please edit 'release.note' file for this release note."
     exit 1
@@ -11,7 +11,7 @@ if [ ! $1 ]; then
     exit 1
 fi
 
-echo "clean and build"
+echo "- clean and build"
 rm -rf ./bin
 go build -o ./bin/tr
 
@@ -20,7 +20,7 @@ if [ $? -ne 0 ]; then
     exit 1
 fi
 
-echo "check gh auth"
+echo "- check gh auth"
 gh auth status
 
 if [ $? -ne 0 ]; then
@@ -28,12 +28,17 @@ if [ $? -ne 0 ]; then
     gh auth login
 fi
 
-echo "release as draft..."
+echo "- create tag $1"
+git tag $1 -m "Release $1"
+echo "- pushing tags"
+git push --tags
+
+echo "- release as draft..."
 gh release create $1 --draft --title "Release $1" --notes-file ./release.note ./bin/tr
 
 if [ $? -eq 0 ]; then
-    echo "release sussess, please view https://github.com/hbk01/tr/releases/tag/$1 to comfirm and publish!"
-    echo "clean..."
+    echo "release sussess, please view https://github.com/hbk01/tr/releases to comfirm and publish!"
+    echo "- clean..."
     rm -rf ./bin
     if [ -f release.note ]; then
         rm release.note
