@@ -10,6 +10,7 @@ import ( // {{{
 	"net/http"
 	"net/url"
 	"os"
+	"runtime"
 	"strconv"
 	"strings"
 	"time"
@@ -31,6 +32,8 @@ const ( // {{{
 	FLAG_TO_LONG    = "--to"
 	FLAG_CLEAN      = "-c"
 	FLAG_CLEAN_LONG = "--clean"
+	FLAG_ARCH       = "-a"
+	FLAG_ARCH_LONG  = "--arch"
 
 	// language code
 	LANG_AUTO = "auto"
@@ -382,6 +385,11 @@ func ParseArgs(args []string) (lang Language, word string) { // {{{
 			CLEAN = true
 		}
 
+		if arg == FLAG_ARCH || arg == FLAG_ARCH_LONG {
+			fmt.Println(runtime.GOOS, runtime.GOARCH)
+			os.Exit(0)
+		}
+
 		if strings.HasPrefix(arg, FLAG_FROM) || strings.HasPrefix(arg, FLAG_FROM_LONG) {
 			lang := strings.Split(arg, "=")[1]
 			if IsLang(lang) {
@@ -438,6 +446,7 @@ func Usage() { // {{{
 	fmt.Println("")
 	fmt.Println("FLAG:")
 	fmt.Println(TAB + "-h, --help    show this help")
+	fmt.Println(TAB + "-a, --arch    show system arch info")
 	fmt.Println(TAB + "-c, --clean   only show Translation")
 	fmt.Println(TAB + "-f=<LANG>, --form=<LANG>  set form language")
 	fmt.Println(TAB + "-t=<LANG>,   --to=<LANG>  set to language")
