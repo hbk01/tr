@@ -45,6 +45,11 @@ GOOS=$os GOARCH=amd64 go build -o ./bin/tr_$1-$os-x64.exe
 echo "    - build x86"
 GOOS=$os GOARCH=386 go build -o ./bin/tr_$1-$os-x86.exe
 
+os=android
+echo "  - build $os"
+echo "    - build arm64"
+GOOS=$os GOARCH=arm64 go build -o ./bin/tr_$1-$os-arm64
+
 echo "- build finished."
 
 if [ $? -ne 0 ]; then
