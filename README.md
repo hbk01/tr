@@ -6,9 +6,9 @@ This project is [Android Translate's](https://github.com/hbk01/Translate) CLI ve
 
 ## Dependency
 
-- [ ] git
-- [ ] golang
-- [ ] make
+- git
+- golang
+- make
 
 ## Compile
 
@@ -19,6 +19,8 @@ make clean install
 ```
 
 # Usage
+
+**Warning: It may not update, use `tr -h` to get usage.**
 
 ```
 USAGE:
